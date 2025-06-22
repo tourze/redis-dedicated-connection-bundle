@@ -1,0 +1,37 @@
+{
+  "name": "tourze/redis-dedicated-connection-bundle",
+  "description": "为服务自动创建和注入专用的 Redis 连接，支持属性、标签、环境变量等多种配置方式",
+  "type": "symfony-bundle",
+  "keywords": [
+    "symfony",
+    "dedicated-connection"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "ext-redis": "*",
+    "monolog/monolog": "^3.1",
+    "psr/log": "^3|^2|^1",
+    "symfony/config": "^6.4",
+    "symfony/dependency-injection": "^6.4",
+    "symfony/framework-bundle": "^6.4",
+    "symfony/http-kernel": "^6.4",
+    "symfony/yaml": "^6.4 || ^7.1",
+    "tourze/bundle-dependency": "0.0.*"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.0",
+    "symfony/phpunit-bridge": "^6.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Tourze\\RedisDedicatedConnectionBundle\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tourze\\RedisDedicatedConnectionBundle\\Tests\\": "tests"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  # 专用连接工厂服务
+  redis_dedicated_connection.factory:
+    class: Tourze\RedisDedicatedConnectionBundle\Factory\DedicatedConnectionFactory
+    autowire: true
+    tags:
+      - { name: kernel.reset, method: closeCurrentContext }
+    public: true  # Make it public for testing
+
+  # 创建别名方便使用
+  Tourze\RedisDedicatedConnectionBundle\Factory\DedicatedConnectionFactory:
+    alias: redis_dedicated_connection.factory
+    public: true

@@ -1,0 +1,25 @@
+services:
+  # Default Redis service for testing
+  redis:
+    class: Redis
+    factory: ['@redis_dedicated_connection.factory', 'createConnection']
+    arguments: ['default']
+
+  # Register Redis class for autowiring
+  Redis:
+    alias: redis
+    public: false
+
+  # Test service with attribute
+  Tourze\RedisDedicatedConnectionBundle\Tests\Fixtures\TestService:
+    autowire: true
+    public: true
+
+  # Test service with tag
+  test.service_with_tag:
+    class: Tourze\RedisDedicatedConnectionBundle\Tests\Fixtures\TestServiceWithTag
+    public: true
+    calls:
+      - [setRedis, ['@redis']]
+    tags:
+      - { name: 'redis.connection_channel', channel: 'tagged' }
