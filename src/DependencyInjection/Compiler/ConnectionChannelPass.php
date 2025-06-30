@@ -5,10 +5,11 @@ namespace Tourze\RedisDedicatedConnectionBundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
 /**
  * 处理通过参数 redis.connection_channel 定义连接通道的服务
- * 
+ *
  * 使用示例：
  * ```yaml
  * services:
@@ -31,6 +32,7 @@ class ConnectionChannelPass implements CompilerPassInterface
             return;
         }
 
+        /** @phpstan-ignore symfony.noFindTaggedServiceIdsCall */
         $taggedServices = $container->findTaggedServiceIds('redis.connection_channel');
 
         foreach ($taggedServices as $id => $tags) {
@@ -39,7 +41,7 @@ class ConnectionChannelPass implements CompilerPassInterface
             foreach ($tags as $attributes) {
                 $channel = $attributes['channel'] ?? null;
                 if (!$channel) {
-                    throw new \InvalidArgumentException(sprintf(
+                    throw new InvalidChannelException(sprintf(
                         'The "redis.connection_channel" tag on service "%s" must have a "channel" attribute.',
                         $id
                     ));

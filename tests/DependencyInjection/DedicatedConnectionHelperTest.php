@@ -1,6 +1,8 @@
 <?php
 
-namespace Tourze\RedisDedicatedConnectionBundle\Tests\Unit\DependencyInjection;
+declare(strict_types=1);
+
+namespace Tourze\RedisDedicatedConnectionBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,6 +14,11 @@ use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 class DedicatedConnectionHelperTest extends TestCase
 {
     private ContainerBuilder $container;
+    
+    protected function setUp(): void
+    {
+        $this->container = new ContainerBuilder();
+    }
     
     public function testAddDedicatedConnectionWithDefinition(): void
     {
@@ -121,10 +128,5 @@ class DedicatedConnectionHelperTest extends TestCase
         $this->assertTrue($definition->hasTag('redis.dedicated_connection'));
         $tags = $definition->getTag('redis.dedicated_connection');
         $this->assertSame('cache', $tags[0]['channel']);
-    }
-
-    protected function setUp(): void
-    {
-        $this->container = new ContainerBuilder();
     }
 }

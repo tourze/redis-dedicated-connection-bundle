@@ -5,12 +5,14 @@ namespace Tourze\RedisDedicatedConnectionBundle\Factory;
 use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Tourze\Symfony\RuntimeContextBundle\Service\ContextServiceInterface;
+use Tourze\RedisDedicatedConnectionBundle\Exception\ConnectionCreationException;
+use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
 /**
  * 专用 Redis 连接工厂
  * 负责创建和管理多个独立的 Redis 连接
  */
-#[WithMonologChannel('redis_factory')]
+#[WithMonologChannel(channel: 'redis_factory')]
 class DedicatedConnectionFactory
 {
     private array $connections = [];
@@ -47,7 +49,7 @@ class DedicatedConnectionFactory
         
         // 连接到 Redis 服务器
         if (!$this->connectRedis($connection, $params)) {
-            throw new \RuntimeException(sprintf('Failed to connect to Redis for channel "%s"', $channel));
+            throw new ConnectionCreationException(sprintf('Failed to connect to Redis for channel "%s"', $channel));
         }
 
         $this->connections[$contextKey] = $connection;
@@ -154,7 +156,7 @@ class DedicatedConnectionFactory
     {
         $parsed = parse_url($url);
         if ($parsed === false) {
-            throw new \InvalidArgumentException(sprintf('Invalid Redis URL: %s', $url));
+            throw new InvalidChannelException(sprintf('Invalid Redis URL: %s', $url));
         }
 
         $params = [];
@@ -164,7 +166,7 @@ class DedicatedConnectionFactory
             if ($parsed['scheme'] === 'rediss') {
                 $params['ssl'] = true;
             } elseif ($parsed['scheme'] !== 'redis') {
-                throw new \InvalidArgumentException(sprintf('Invalid Redis URL scheme: %s', $parsed['scheme']));
+                throw new InvalidChannelException(sprintf('Invalid Redis URL scheme: %s', $parsed['scheme']));
             }
         }
 
@@ -230,7 +232,7 @@ class DedicatedConnectionFactory
 
             // 建立连接
             if ($params['persistent']) {
-                $connected = $redis->pconnect(
+                $connected = @$redis->pconnect(
                     $host,
                     $params['port'],
                     $params['timeout'],
@@ -239,7 +241,7 @@ class DedicatedConnectionFactory
                     $params['read_write_timeout']
                 );
             } else {
-                $connected = $redis->connect(
+                $connected = @$redis->connect(
                     $host,
                     $params['port'],
                     $params['timeout'],

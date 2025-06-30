@@ -4,7 +4,7 @@ namespace Tourze\RedisDedicatedConnectionBundle\Attribute;
 
 /**
  * 标记一个服务需要使用专用的 Redis 连接
- * 
+ *
  * 使用示例：
  * ```php
  * #[WithDedicatedConnection('cache')]
@@ -15,7 +15,7 @@ namespace Tourze\RedisDedicatedConnectionBundle\Attribute;
  *     ) {}
  * }
  * ```
- * 
+ *
  * 该注解会自动创建专用的 Redis 连接并注入到服务中
  * Redis 配置通过环境变量管理，例如：CACHE_REDIS_HOST, CACHE_REDIS_PORT 等
  */

@@ -12,6 +12,7 @@ class DedicatedConnectionFactoryTest extends TestCase
     private DedicatedConnectionFactory $factory;
     private ContextServiceInterface $contextService;
     private LoggerInterface $logger;
+    private array $envBackup = [];
 
     public function testCreateConnectionWithDefaultParams(): void
     {
@@ -284,6 +285,18 @@ class DedicatedConnectionFactoryTest extends TestCase
 
     protected function setUp(): void
     {
+        // 备份可能影响测试的环境变量
+        $keysToBackup = [];
+        foreach ($_ENV as $key => $value) {
+            if (strpos($key, 'REDIS') !== false) {
+                $keysToBackup[] = $key;
+            }
+        }
+        foreach ($keysToBackup as $key) {
+            $this->envBackup[$key] = $_ENV[$key] ?? null;
+            unset($_ENV[$key]);
+        }
+
         $this->contextService = $this->createMock(ContextServiceInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
@@ -291,5 +304,18 @@ class DedicatedConnectionFactoryTest extends TestCase
             $this->contextService,
             $this->logger
         );
+    }
+
+    protected function tearDown(): void
+    {
+        // 恢复环境变量
+        foreach ($this->envBackup as $key => $value) {
+            if ($value !== null) {
+                $_ENV[$key] = $value;
+            } else {
+                unset($_ENV[$key]);
+            }
+        }
+        $this->envBackup = [];
     }
 }

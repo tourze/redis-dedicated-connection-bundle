@@ -5,6 +5,7 @@ namespace Tourze\RedisDedicatedConnectionBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
 /**
  * 辅助类，提供便捷的方法来配置专用 Redis 连接
@@ -23,7 +24,7 @@ class DedicatedConnectionHelper
     {
         if (is_string($definition)) {
             if ($container === null) {
-                throw new \InvalidArgumentException('Container must be provided when using service ID');
+                throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
         }
@@ -45,7 +46,7 @@ class DedicatedConnectionHelper
     {
         if (is_string($definition)) {
             if ($container === null) {
-                throw new \InvalidArgumentException('Container must be provided when using service ID');
+                throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
         }
@@ -91,7 +92,7 @@ class DedicatedConnectionHelper
     {
         if (is_string($definition)) {
             if ($container === null) {
-                throw new \InvalidArgumentException('Container must be provided when using service ID');
+                throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
         }

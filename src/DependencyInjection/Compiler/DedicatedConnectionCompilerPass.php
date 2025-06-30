@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
 /**
  * Redis 连接创建编译器传递
@@ -30,6 +31,7 @@ class DedicatedConnectionCompilerPass implements CompilerPassInterface
      */
     private function processTaggedServices(ContainerBuilder $container): void
     {
+        /** @phpstan-ignore symfony.noFindTaggedServiceIdsCall */
         $taggedServices = $container->findTaggedServiceIds('redis.dedicated_connection');
         
         foreach ($taggedServices as $id => $tags) {
@@ -38,7 +40,7 @@ class DedicatedConnectionCompilerPass implements CompilerPassInterface
             foreach ($tags as $attributes) {
                 $channel = $attributes['channel'] ?? null;
                 if (!$channel) {
-                    throw new \InvalidArgumentException(sprintf(
+                    throw new InvalidChannelException(sprintf(
                         'The "redis.dedicated_connection" tag on service "%s" must have a "channel" attribute.',
                         $id
                     ));
