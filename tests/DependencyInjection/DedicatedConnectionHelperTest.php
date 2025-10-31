@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\RedisDedicatedConnectionBundle\Tests\DependencyInjection;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -11,15 +12,14 @@ use Symfony\Component\DependencyInjection\Reference;
 use Tourze\RedisDedicatedConnectionBundle\DependencyInjection\DedicatedConnectionHelper;
 use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
-class DedicatedConnectionHelperTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(DedicatedConnectionHelper::class)]
+final class DedicatedConnectionHelperTest extends TestCase
 {
     private ContainerBuilder $container;
-    
-    protected function setUp(): void
-    {
-        $this->container = new ContainerBuilder();
-    }
-    
+
     public function testAddDedicatedConnectionWithDefinition(): void
     {
         $definition = new Definition('TestService');
@@ -31,7 +31,10 @@ class DedicatedConnectionHelperTest extends TestCase
 
         $tags = $definition->getTag('redis.dedicated_connection');
         $this->assertCount(1, $tags);
-        $this->assertSame('cache', $tags[0]['channel']);
+        $this->assertIsArray($tags[0] ?? null);
+        /** @var array{channel: string} $firstTag */
+        $firstTag = $tags[0];
+        $this->assertSame('cache', $firstTag['channel']);
     }
 
     public function testAddDedicatedConnectionWithServiceId(): void
@@ -64,7 +67,10 @@ class DedicatedConnectionHelperTest extends TestCase
 
         $tags = $definition->getTag('redis.connection_channel');
         $this->assertCount(1, $tags);
-        $this->assertSame('cache', $tags[0]['channel']);
+        $this->assertIsArray($tags[0] ?? null);
+        /** @var array{channel: string} $firstTag */
+        $firstTag = $tags[0];
+        $this->assertSame('cache', $firstTag['channel']);
     }
 
     public function testCreateConnectionReference(): void
@@ -127,6 +133,15 @@ class DedicatedConnectionHelperTest extends TestCase
 
         $this->assertTrue($definition->hasTag('redis.dedicated_connection'));
         $tags = $definition->getTag('redis.dedicated_connection');
-        $this->assertSame('cache', $tags[0]['channel']);
+        $this->assertIsArray($tags[0] ?? null);
+        /** @var array{channel: string} $firstTag */
+        $firstTag = $tags[0];
+        $this->assertSame('cache', $firstTag['channel']);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->container = new ContainerBuilder();
     }
 }

@@ -4,13 +4,25 @@ services:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+  # Redis URL 解析器
+  Tourze\RedisDedicatedConnectionBundle\Factory\RedisUrlParser:
+    autowire: true
+
+  # 连接参数构建器
+  Tourze\RedisDedicatedConnectionBundle\Factory\ConnectionParamsBuilder:
+    autowire: true
+
+  # Redis 连接器
+  Tourze\RedisDedicatedConnectionBundle\Factory\RedisConnector:
+    autowire: true
+
   # 专用连接工厂服务
   redis_dedicated_connection.factory:
     class: Tourze\RedisDedicatedConnectionBundle\Factory\DedicatedConnectionFactory
+    public: true
     autowire: true
     tags:
       - { name: kernel.reset, method: closeCurrentContext }
-    public: true  # Make it public for testing
 
   # 创建别名方便使用
   Tourze\RedisDedicatedConnectionBundle\Factory\DedicatedConnectionFactory:

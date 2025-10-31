@@ -15,15 +15,14 @@ class DedicatedConnectionHelper
     /**
      * 为服务添加专用连接标签
      *
-     * @param Definition|string $definition 服务定义或服务 ID
-     * @param string $channel 连接通道名称
-     * @param ContainerBuilder|null $container 当传入服务 ID 时必须提供
-     * @return Definition
+     * @param Definition|string     $definition 服务定义或服务 ID
+     * @param string                $channel    连接通道名称
+     * @param ContainerBuilder|null $container  当传入服务 ID 时必须提供
      */
-    public static function addDedicatedConnection($definition, string $channel, ?ContainerBuilder $container = null): Definition
+    public static function addDedicatedConnection(Definition|string $definition, string $channel, ?ContainerBuilder $container = null): Definition
     {
         if (is_string($definition)) {
-            if ($container === null) {
+            if (null === $container) {
                 throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
@@ -37,15 +36,14 @@ class DedicatedConnectionHelper
     /**
      * 为服务添加连接通道标签（用于更细粒度的控制）
      *
-     * @param Definition|string $definition 服务定义或服务 ID
-     * @param string $channel 连接通道名称
-     * @param ContainerBuilder|null $container 当传入服务 ID 时必须提供
-     * @return Definition
+     * @param Definition|string     $definition 服务定义或服务 ID
+     * @param string                $channel    连接通道名称
+     * @param ContainerBuilder|null $container  当传入服务 ID 时必须提供
      */
-    public static function addConnectionChannel($definition, string $channel, ?ContainerBuilder $container = null): Definition
+    public static function addConnectionChannel(Definition|string $definition, string $channel, ?ContainerBuilder $container = null): Definition
     {
         if (is_string($definition)) {
-            if ($container === null) {
+            if (null === $container) {
                 throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
@@ -58,22 +56,16 @@ class DedicatedConnectionHelper
 
     /**
      * 检查容器中是否已存在指定通道的连接
-     *
-     * @param ContainerBuilder $container
-     * @param string $channel
-     * @return bool
      */
     public static function hasConnection(ContainerBuilder $container, string $channel): bool
     {
         $connectionId = sprintf('redis.%s_connection', $channel);
+
         return $container->hasDefinition($connectionId) || $container->hasAlias($connectionId);
     }
 
     /**
      * 获取连接服务 ID
-     *
-     * @param string $channel
-     * @return string
      */
     public static function getConnectionId(string $channel): string
     {
@@ -83,15 +75,14 @@ class DedicatedConnectionHelper
     /**
      * 为服务配置多个专用连接
      *
-     * @param Definition|string $definition 服务定义或服务 ID
-     * @param array $channels 通道名称数组
-     * @param ContainerBuilder|null $container 当传入服务 ID 时必须提供
-     * @return Definition
+     * @param Definition|string     $definition 服务定义或服务 ID
+     * @param array<string>         $channels   通道名称数组
+     * @param ContainerBuilder|null $container  当传入服务 ID 时必须提供
      */
-    public static function addMultipleDedicatedConnections($definition, array $channels, ?ContainerBuilder $container = null): Definition
+    public static function addMultipleDedicatedConnections(Definition|string $definition, array $channels, ?ContainerBuilder $container = null): Definition
     {
         if (is_string($definition)) {
-            if ($container === null) {
+            if (null === $container) {
                 throw new InvalidChannelException('Container must be provided when using service ID');
             }
             $definition = $container->getDefinition($definition);
@@ -107,10 +98,9 @@ class DedicatedConnectionHelper
     /**
      * 创建一个带有专用连接的服务定义
      *
-     * @param string $class 服务类名
-     * @param string $channel 连接通道名称
-     * @param array $additionalArguments 额外的构造函数参数
-     * @return Definition
+     * @param string         $class               服务类名
+     * @param string         $channel             连接通道名称
+     * @param array<mixed>   $additionalArguments 额外的构造函数参数
      */
     public static function createServiceWithConnection(string $class, string $channel, array $additionalArguments = []): Definition
     {
@@ -134,7 +124,6 @@ class DedicatedConnectionHelper
      * 创建一个专用连接的引用
      *
      * @param string $channel 连接通道名称
-     * @return Reference
      */
     public static function createConnectionReference(string $channel): Reference
     {

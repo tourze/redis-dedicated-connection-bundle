@@ -2,17 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Tourze\RedisDedicatedConnectionBundle\Tests\Unit\Exception;
+namespace Tourze\RedisDedicatedConnectionBundle\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
-class InvalidChannelExceptionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(InvalidChannelException::class)]
+final class InvalidChannelExceptionTest extends AbstractExceptionTestCase
 {
     public function testExceptionExtendsInvalidArgumentException(): void
     {
         $exception = new InvalidChannelException('Test message');
-        
+
         $this->assertInstanceOf(\InvalidArgumentException::class, $exception);
     }
 
@@ -20,7 +25,7 @@ class InvalidChannelExceptionTest extends TestCase
     {
         $message = 'Invalid channel name';
         $exception = new InvalidChannelException($message);
-        
+
         $this->assertEquals($message, $exception->getMessage());
     }
 
@@ -29,7 +34,7 @@ class InvalidChannelExceptionTest extends TestCase
         $message = 'Channel error';
         $code = 400;
         $exception = new InvalidChannelException($message, $code);
-        
+
         $this->assertEquals($code, $exception->getCode());
     }
 
@@ -37,14 +42,14 @@ class InvalidChannelExceptionTest extends TestCase
     {
         $previous = new \Exception('Previous exception');
         $exception = new InvalidChannelException('Wrapper exception', 0, $previous);
-        
+
         $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testDefaultConstructor(): void
     {
         $exception = new InvalidChannelException();
-        
+
         $this->assertEmpty($exception->getMessage());
         $this->assertEquals(0, $exception->getCode());
         $this->assertNull($exception->getPrevious());

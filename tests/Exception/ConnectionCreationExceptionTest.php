@@ -2,17 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Tourze\RedisDedicatedConnectionBundle\Tests\Unit\Exception;
+namespace Tourze\RedisDedicatedConnectionBundle\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 use Tourze\RedisDedicatedConnectionBundle\Exception\ConnectionCreationException;
 
-class ConnectionCreationExceptionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(ConnectionCreationException::class)]
+final class ConnectionCreationExceptionTest extends AbstractExceptionTestCase
 {
     public function testExceptionExtendsRuntimeException(): void
     {
         $exception = new ConnectionCreationException('Test message');
-        
+
         $this->assertInstanceOf(\RuntimeException::class, $exception);
     }
 
@@ -20,7 +25,7 @@ class ConnectionCreationExceptionTest extends TestCase
     {
         $message = 'Failed to create connection';
         $exception = new ConnectionCreationException($message);
-        
+
         $this->assertEquals($message, $exception->getMessage());
     }
 
@@ -29,7 +34,7 @@ class ConnectionCreationExceptionTest extends TestCase
         $message = 'Connection error';
         $code = 500;
         $exception = new ConnectionCreationException($message, $code);
-        
+
         $this->assertEquals($code, $exception->getCode());
     }
 
@@ -37,14 +42,14 @@ class ConnectionCreationExceptionTest extends TestCase
     {
         $previous = new \Exception('Previous exception');
         $exception = new ConnectionCreationException('Wrapper exception', 0, $previous);
-        
+
         $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testDefaultConstructor(): void
     {
         $exception = new ConnectionCreationException();
-        
+
         $this->assertEmpty($exception->getMessage());
         $this->assertEquals(0, $exception->getCode());
         $this->assertNull($exception->getPrevious());

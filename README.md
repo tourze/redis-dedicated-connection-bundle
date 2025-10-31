@@ -1,14 +1,60 @@
 # Redis Dedicated Connection Bundle
 
-This bundle provides automatic creation and injection of dedicated Redis connections for Symfony services, supporting attributes, tags, and environment variable configuration.
+[English](README.md) | [中文](README.zh-CN.md)
+
+[![Latest Version](https://img.shields.io/packagist/v/tourze/redis-dedicated-connection-bundle.svg?style=flat-square)](https://packagist.org/packages/tourze/redis-dedicated-connection-bundle)
+[![PHP Version Require](https://poser.pugx.org/tourze/redis-dedicated-connection-bundle/require/php?style=flat-square)](https://packagist.org/packages/tourze/redis-dedicated-connection-bundle)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/tourze/php-monorepo/ci.yml?branch=master&style=flat-square)](https://github.com/tourze/php-monorepo/actions)
+[![Quality Score](https://img.shields.io/scrutinizer/g/tourze/php-monorepo.svg?style=flat-square)](https://scrutinizer-ci.com/g/tourze/php-monorepo)
+[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/tourze/php-monorepo?style=flat-square)](https://scrutinizer-ci.com/g/tourze/php-monorepo)
+[![License](https://img.shields.io/github/license/tourze/php-monorepo?style=flat-square)](LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/tourze/redis-dedicated-connection-bundle.svg?style=flat-square)](https://packagist.org/packages/tourze/redis-dedicated-connection-bundle)
+
+This bundle provides automatic creation and injection of dedicated Redis connections for Symfony 
+services, supporting attributes, tags, and environment variable configuration.
+
+## Table of Contents
+
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Method 1: Using PHP Attributes](#method-1-using-php-attributes)
+  - [Method 2: Using Service Tags](#method-2-using-service-tags)
+  - [Method 3: Using Connection Channel Tags](#method-3-using-connection-channel-tags)
+  - [Method 4: Using the Helper Class](#method-4-using-the-helper-class)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Method 1: Using Redis URL (Recommended)](#method-1-using-redis-url-recommended)
+  - [Method 2: Using Individual Parameters](#method-2-using-individual-parameters)
+- [Available Environment Variables](#available-environment-variables)
+- [Advanced Usage](#advanced-usage)
+  - [Multiple Connections for One Service](#multiple-connections-for-one-service)
+  - [Direct Connection Reference](#direct-connection-reference)
+  - [Checking Connection Existence](#checking-connection-existence)
+- [Testing](#testing)
+- [Security](#security)
+- [Contributing](#contributing)
+  - [Running Tests](#running-tests)
+  - [Reporting Issues](#reporting-issues)
+- [License](#license)
 
 ## Features
 
-- **Automatic Connection Creation**: Automatically creates Redis connections based on service requirements
-- **Multiple Configuration Methods**: Support for PHP attributes, service tags, and environment variables
+- **Automatic Connection Creation**: Automatically creates Redis connections based on service 
+  requirements
+- **Multiple Configuration Methods**: Support for PHP attributes, service tags, and environment 
+  variables
 - **Connection Isolation**: Each service can have its own dedicated Redis connection
 - **Coroutine Support**: Proper connection management in coroutine environments
 - **Flexible Configuration**: Support for single instance, cluster, and replication modes
+
+## Dependencies
+
+- PHP 8.1 or higher
+- Symfony 6.4 or higher
+- PHP Redis extension
+- tourze/symfony-runtime-context-bundle
 
 ## Installation
 
@@ -83,9 +129,10 @@ $container->setDefinition('app.analytics_service', $definition);
 
 The bundle supports two ways to configure Redis connections:
 
-#### Method 1: Using Redis URL (Recommended)
+### Method 1: Using Redis URL (Recommended)
 
-Configure connections using Redis URLs following the [official Redis URI scheme](https://github.com/redis/redis-specifications/blob/master/uri/redis.txt):
+Configure connections using Redis URLs following the 
+[official Redis URI scheme](https://github.com/redis/redis-specifications/blob/master/uri/redis.txt):
 
 ```env
 # Default connection
@@ -115,9 +162,10 @@ Supported query parameters in URLs:
 - `persistent` - Use persistent connection (true/false)
 - `prefix` - Key prefix for all operations
 
-#### Method 2: Using Individual Parameters
+### Method 2: Using Individual Parameters
 
-Configure connections using individual environment variables with the pattern `{CHANNEL}_REDIS_{OPTION}`:
+Configure connections using individual environment variables with the pattern 
+`{CHANNEL}_REDIS_{OPTION}`:
 
 ```env
 # Basic configuration
@@ -191,16 +239,54 @@ if (DedicatedConnectionHelper::hasConnection($container, 'cache')) {
 Run the test suite:
 
 ```bash
-# Unit tests
-vendor/bin/phpunit tests/Unit
-
-# Integration tests
-vendor/bin/phpunit tests/Integration
-
-# All tests
-vendor/bin/phpunit
+# From the monorepo root directory
+./vendor/bin/phpunit packages/redis-dedicated-connection-bundle/tests
 ```
+
+**Note**: Integration tests require a running Redis server. If Redis is not available, these 
+tests will be skipped.
+
+## Security
+
+### Security Considerations
+
+When using this bundle, please consider the following security aspects:
+
+1. **Environment Variables**: Never commit Redis credentials to version control. Use environment 
+   variables or secure configuration management systems.
+
+2. **Network Security**: 
+    - Use SSL/TLS connections (rediss://) for production environments
+    - Restrict Redis server access to trusted networks only
+    - Configure Redis authentication and ACLs properly
+
+3. **Data Encryption**: This bundle does not encrypt data at the application level. Consider 
+   encrypting sensitive data before storing it in Redis.
+
+4. **Connection Limits**: Configure appropriate connection limits to prevent resource exhaustion 
+   attacks.
+
+### Reporting Security Vulnerabilities
+
+If you discover a security vulnerability, please send an email to security@tourze.com instead of 
+creating a public issue. All security vulnerabilities will be promptly addressed.
+
+## Contributing
+
+We welcome contributions! Please see our [contributing guidelines](../../CONTRIBUTING.md) for details.
+
+### Running Tests
+
+Before submitting a pull request, please ensure:
+
+1. All tests pass: `./vendor/bin/phpunit packages/redis-dedicated-connection-bundle/tests`
+2. Code follows PSR standards: `./vendor/bin/php-cs-fixer fix packages/redis-dedicated-connection-bundle`
+3. Static analysis passes: `./vendor/bin/phpstan analyse packages/redis-dedicated-connection-bundle`
+
+### Reporting Issues
+
+If you discover a bug or have a feature request, please create an issue on our [GitHub repository](https://github.com/tourze/php-monorepo/issues).
 
 ## License
 
-This bundle is licensed under the MIT License.
+This bundle is licensed under the MIT License. See the [LICENSE](../../LICENSE) file for details.

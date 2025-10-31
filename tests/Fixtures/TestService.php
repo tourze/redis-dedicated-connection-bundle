@@ -4,11 +4,11 @@ namespace Tourze\RedisDedicatedConnectionBundle\Tests\Fixtures;
 
 use Tourze\RedisDedicatedConnectionBundle\Attribute\WithDedicatedConnection;
 
-#[WithDedicatedConnection('test')]
+#[WithDedicatedConnection(channel: 'test')]
 class TestService
 {
     public function __construct(
-        private readonly \Redis $redis
+        private readonly \Redis $redis,
     ) {
     }
 

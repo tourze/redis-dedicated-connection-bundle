@@ -4,7 +4,6 @@ namespace Tourze\RedisDedicatedConnectionBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 
@@ -15,7 +14,7 @@ use Tourze\RedisDedicatedConnectionBundle\Exception\InvalidChannelException;
 class DedicatedConnectionCompilerPass implements CompilerPassInterface
 {
     use ConnectionCreationTrait;
-    
+
     public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition('redis_dedicated_connection.factory')) {
@@ -31,59 +30,29 @@ class DedicatedConnectionCompilerPass implements CompilerPassInterface
      */
     private function processTaggedServices(ContainerBuilder $container): void
     {
-        /** @phpstan-ignore symfony.noFindTaggedServiceIdsCall */
-        $taggedServices = $container->findTaggedServiceIds('redis.dedicated_connection');
-        
+        $taggedServices = $this->getTaggedServiceIds($container, 'redis.dedicated_connection');
+
         foreach ($taggedServices as $id => $tags) {
             $definition = $container->getDefinition($id);
 
             foreach ($tags as $attributes) {
                 $channel = $attributes['channel'] ?? null;
-                if (!$channel) {
-                    throw new InvalidChannelException(sprintf(
-                        'The "redis.dedicated_connection" tag on service "%s" must have a "channel" attribute.',
-                        $id
-                    ));
+                if (null === $channel || '' === $channel) {
+                    throw new InvalidChannelException(sprintf('The "redis.dedicated_connection" tag on service "%s" must have a "channel" attribute.', $id));
+                }
+
+                if (!is_string($channel)) {
+                    throw new InvalidChannelException(sprintf('The "channel" attribute on service "%s" must be a string, %s given.', $id, get_debug_type($channel)));
                 }
 
                 $this->ensureConnectionService($container, $channel, $attributes);
-                $this->bindConnectionToService($container, $definition, $channel);
+
+                // 使用参数绑定机制让 Symfony 自动装配正确的 Redis 连接
+                $connectionId = sprintf('redis.%s_connection', $channel);
+                $definition->setBindings([
+                    '$redis' => new Reference($connectionId),
+                ]);
             }
         }
-    }
-
-    /**
-     * 绑定连接到服务
-     */
-    private function bindConnectionToService(ContainerBuilder $container, Definition $definition, string $channel): void
-    {
-        $connectionId = sprintf('redis.%s_connection', $channel);
-        
-        // 尝试自动绑定到构造函数参数
-        $this->autoBindToConstructor($definition, $connectionId);
-    }
-
-    /**
-     * 自动绑定到构造函数
-     */
-    private function autoBindToConstructor(Definition $definition, string $connectionId): void
-    {
-        $arguments = $definition->getArguments();
-        
-        // 查找合适的参数位置
-        foreach ($arguments as $index => $argument) {
-            if ($argument instanceof Reference) {
-                $refId = (string) $argument;
-                // 如果参数是 redis 相关的服务，替换它
-                if (str_contains($refId, 'redis')) {
-                    $arguments[$index] = new Reference($connectionId);
-                    $definition->setArguments($arguments);
-                    return;
-                }
-            }
-        }
-
-        // 如果没有找到合适的参数，添加到构造函数末尾
-        $definition->addArgument(new Reference($connectionId));
     }
 }
