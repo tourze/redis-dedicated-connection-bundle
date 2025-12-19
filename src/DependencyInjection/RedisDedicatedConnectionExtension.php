@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Tourze\RedisDedicatedConnectionBundle\Attribute\WithDedicatedConnection;
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class RedisDedicatedConnectionExtension extends AutoExtension
+final class RedisDedicatedConnectionExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {
